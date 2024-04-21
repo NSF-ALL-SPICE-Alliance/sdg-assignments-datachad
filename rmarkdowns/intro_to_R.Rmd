@@ -29,13 +29,35 @@ Welcome to R! We'll go over some brief introductory information on how to get st
 3. Exploratory Data Analysis
 4. Resources
 5. Challenge!
+```{r}
+
+```
 
 ### Packages and Libraries
 One of the most helpful tools to an R programmer are R packages! In a nutshell, an R package is a toolbox that can have a variety of things that can be useful to you (datasets, functions, etc.). Packages are stored in a *library* in R. You already have some R packages installed - let's use the `library()` function to see which packages you have. 
 
 ```{r}
-library()
+library("tidyverse")
 ```
+```{r}
+library(here)
+```
+```{r}
+library(janitor)
+```
+```{r}
+library(naniar)
+```
+
+
+
+
+
+```{r}
+system.file(package = "tidyverse")
+```
+
+
 
 A new window should have opened up with a list of packages and a short description! 
 
@@ -47,6 +69,14 @@ We used the `library()` function within a code chunk (discussed last video). We 
   
     - For mac: Cmd + option + i
     - For PC: Ctrl + alt + i
+```{r}
+my_name <- "DataChad"
+my_age <- 40
+my_age + 40
+
+```
+
+
   
   - The beginning of a code chunk will always start with three dashes followed by {r} and end with three dashes
 
@@ -96,6 +126,8 @@ Let's practice creating some variables:
 ```{r}
 my_name <- "Victoria DelaCruz" # character strings are stored within quotations
 my_name # run the name of your variable to see the output
+
+my_name <-"Data Chad"
 ```
 
 2. my_age
@@ -104,6 +136,32 @@ my_age = 20 # numeric values do not need any quotations
 my_age # run the name of your variable to see the output
 my_age + 5 # how old will you be in 5 years?
 ```
+
+```{r}
+#install.packages("janitor")
+```
+
+
+```{r}
+system.file("tidyverse")
+```
+```{r}
+library(here)
+```
+
+
+```{r}
+sdr_data <-read_csv(here("data/SDR-2023-data.csv"))
+```
+
+
+
+
+```{r}
+install.packages("janitor")
+```
+
+
 
 #### <span style="color: red;">Challenge 1</span>
 Create a my_name variable with your name assigned to the variable instead of "Victoria DelaCruz". Then, create a my_age variable with your age. 
@@ -151,7 +209,10 @@ If you want to remove or delete a variable, you can run the following code:
 
 ```{r}
 rm(my_name) # input the variable name in the parenthesis
-```
+
+
+```{r}
+library(ggplot2)
 
 #### Variables Best Practices
 ##### Naming Variables
@@ -189,6 +250,7 @@ library(here) # allows us to cut out long file paths, ensures reproducibility
 library(janitor) # helps us clean column names
 ```
 
+
 Note: **You will most likely get an error.** If you get an error about not having these packages installed, run the install.packages("packagename") code in the console. We went over this on line 48 under the *Installing a Package* header
 
 Example of this kind of error pictured here:
@@ -201,14 +263,38 @@ In the code chunk below, we use the `read_csv()` function to read in the csv fil
   - We use the `here()` function to cut out long file paths. Instead of starting at the home directory on our computer and having to point R towards the csv file we want to read in with *"Users/Victoria/data_science/SDR-2023-Landscape/SDR-2023-Data.csv"*, we can simply tell R to start within the directory of our current R project and find the SDR-2023-Data.csv in our data folder. 
   
     - This also **ensures reproducibility** because as long as we share R projects on github, our project directories will always be the same
+
 ```{r, message=FALSE}
 sdr_data <- read_csv(here("data/SDR-2023-Data.csv")) # assigning the dataset to a variable so that we can look at/reference it
 # to view the whole dataset you can click on sdr_data in your environment pane at the top right of your screen)
 ```
 Cleaning names
+
 ```{r}
-sdr_data <- clean_names(sdr_data) # cleaning column names 
+clean_names(sdr_data)
 ```
+
+clean_names(SDR_2023_Data)
+
+
+
+
+
+
+```{r}
+sdr_data <- read.csv(here("data"))
+```
+
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
 
 Note: In programming, we don't use spaces in names (usually, if you want to use a space between words, you'd use an underscore, slash, or other punctuation). That's why we used the `clean_names` function from the `janitor` package, to clean our column names and replace spaces with underscores.
 
