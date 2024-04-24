@@ -75,7 +75,7 @@ We start with the same exact code and add to it with `+`
 ```{r, message=FALSE, warning=FALSE}
 ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
   geom_histogram() +
-  theme_minimal() +
+  theme_linedraw() +
   scale_fill_viridis_d() +
   labs(title = "Distributions of SDG 4 Scores",
        x = "SDG 4 Score",
@@ -105,16 +105,16 @@ Interactive visualizations are a really exciting part of data science! Interacti
    
       
 ```{r}
-goal_4_histogram <- ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
-  geom_histogram() +
-  theme_minimal() +
-  scale_fill_viridis_d() +
-  labs(title = "Distributions of SDG 4 Scores",
-       x = "SDG 4 Score",
-       y = "Number of Countries",
-       fill = "Region")
+goal_da_score <- ggplot(sdr_data, aes(x = goal_4_score, y = goal_7_score, color =regions_used_for_the_sdr)) +
+  geom_point() +
+  theme_dark() +
+  scale_fill_viridis_d(option = "magma") +
+  labs(title = "Data Braddahz",
+       x = "Score 4 SDG",
+       y = "All Dem Countries",
+       color = "Da Spotty")
 
-ggplotly(goal_4_histogram)
+ggplotly(goal_da_score)
 ```
 
 
@@ -131,10 +131,21 @@ Here is the code for a scatter plot you made in the last lesson:
 
 ```{r, warning = FALSE}
 ggplot(data = sdr_data, aes(x= goal_3_score, y = goal_4_score, color = regions_used_for_the_sdr)) +
-  geom_point()
+  geom_point() 
 ```
 
 *Edit the code chunk above* that generates the plot to:
+```{r}
+plot_scores_plot <- ggplot(data = sdr_data, aes(x= goal_3_score, y = goal_4_score, color = regions_used_for_the_sdr, label = country)) +
+  geom_point() +
+  theme_minimal() +
+  scale_color_viridis_d(option = "inferno") +
+  labs(x = "score 3 sdr",
+       y = "score 4 sdr",
+       color = "I am Legend")
+  
+ggplotly(plot_scores_plot)       
+```
 
 - add a theme with theme_minimal()
 - add a color palette with scale_fill_viridis_d()
