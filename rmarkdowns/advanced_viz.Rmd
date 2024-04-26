@@ -139,7 +139,7 @@ ggplot(data = sdr_data, aes(x= goal_3_score, y = goal_4_score, color = regions_u
 plot_scores_plot <- ggplot(data = sdr_data, aes(x= goal_3_score, y = goal_4_score, color = regions_used_for_the_sdr, label = country)) +
   geom_point() +
   theme_minimal() +
-  scale_color_viridis_d(option = "inferno") +
+  scale_color_viridis_d(option = "magma") +
   labs(x = "score 3 sdr",
        y = "score 4 sdr",
        color = "I am Legend")
@@ -266,14 +266,14 @@ Awesome! We're ready to make a map
 ```{r}
 mytext <- paste(
     "Country: ", sdr_data_world_joined$country,"<br/>", 
-    "Goal 7 Score: ", round(sdr_data_world_joined$goal_7_score, 2), 
+    "Goal 3 Score: ", round(sdr_data_world_joined$goal_3_score, 2), 
     sep="") %>%
   lapply(htmltools::HTML)
 
 leaflet(sdr_data_world_joined) %>% 
   addTiles()  %>% 
   setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("YlOrRd", goal_7_score)(goal_7_score), label = mytext)
+  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("inferno", goal_2_score)(goal_2_score), label = mytext)
 ```
 #### <span style="color: red;">Challenge 2</span>
 
