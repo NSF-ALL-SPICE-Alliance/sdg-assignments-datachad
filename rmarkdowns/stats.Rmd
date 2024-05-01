@@ -29,6 +29,7 @@ library(ggpubr)
 library(janitor)
 library(ggcorrplot)
 library(vembedr)
+library(plotly)
 ```
 
 
@@ -197,15 +198,16 @@ To circle back and reinforce how the linear regression (line drawn through our s
   - What does this look like on scatter plot?
   
 ```{r, warning=FALSE, message=FALSE}
-ggplot(sdr_data, aes(x = goal_12_score, 
-                     y = goal_9_score)) +
+sdg_goal_chads_one <- ggplot(sdr_data, aes(x = goal_1_score, 
+                     y = goal_3_score, label = country)) +
   geom_point() +
   geom_smooth() +
-  stat_cor() +
+  stat_cor(output.type = "text", label.sep = '\n') +
   theme_minimal() 
 
+ggplotly(sdg_goal_chads_one)
 ```
-
+There is a very high correlation between the goal scores for "No Poverty" and "Health and well being".  It makes sense because where there is less poverty, in general the well being of that demographic has nourishment and clean water more readily available.  Medicine and health care is also a strong point for demographics with less poverty so individuals well being commonly rates higher.
 ### <span style="color: red;">Challenge 1</span>
 
 - Edit the code chunk above to plot a linear regression of 2 different sdg scores 
