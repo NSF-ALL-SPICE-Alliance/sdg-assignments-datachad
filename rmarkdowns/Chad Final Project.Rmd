@@ -1,0 +1,134 @@
+---
+title: "DataChad's Region Interpretation"
+author: "Chad Greenbaum"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(plotly)
+library(vembedr)
+library(leaflet)
+library(rnaturalearth)
+library(sf)
+library(ggpubr)
+library(ggcorrplot)
+
+```
+Read in Data
+
+```{r}
+SDR_2023_Data <- read.csv(here("data/sdr-2023-Data.csv"))
+```
+Clean up Data
+
+```{r}
+SDR_2023_Data <- SDR_2023_Data %>%
+  clean_names()
+```
+Read in Data
+
+```{r}
+SDR_data_sids <- read.csv(here("data/sDR-for-SIDS/SIDS-SDR-2023-data.csv"))
+```
+Clean Columns
+
+```{r}
+SDR_data_sids <- SDR_data_sids %>%
+  clean_names()
+```
+Create Dataframe from "rnaturalearth" and name it.  I used "world".
+
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+```
+Minimize the Dataframe to 3 columns
+
+```{r}
+world <- world %>% 
+  select(name_long, iso_a3, geometry)
+```
+We need to match the code in both dataframes 
+
+```{r}
+colnames(SDR_2023_Data)[which(colnames(SDR_2023_Data) == "country_code_iso3")] <- "iso_a3"
+```
+Now we join both dataframes and name it
+
+```{r}
+sdr_data_world_joined <- left_join(SDR_2023_Data, world, by = "iso_a3")
+```
+Check the class in order to make it an "sf dataframe".
+
+```{r}
+class(sdr_data_world_joined)
+```
+Now we need to allow "leaflet" to understand the geometry to make a real map.
+
+```{r}
+sdr_data_world_joined <- st_as_sf(sdr_data_world_joined)
+```
+1984 world data geometry is pulled 
+
+```{r}
+sdr_data_world_joined <- st_transform(sdr_data_world_joined, "+proj=longlat +datum=WGS84")
+```
+
+
+```{r}
+mytext <- paste(
+    "The Spots: ", sdr_data_world_joined$country,"<br/>", 
+    "Clean Water?: ", round(sdr_data_world_joined$goal_6_score, 2), 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+leaflet(sdr_data_world_joined) %>% 
+  addTiles()  %>% 
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("RdYlBu", goal_6_score)(goal_6_score), label = mytext)
+```
+
+Now we have created an interactive world map with colors illuminating SDG 6 scores around the globe.  By looking at this map you can see that by far the United Kingdom, Finland and Sweden have the cleanest water in the world with very high SDG 6 scores.  These three countries all are very close to one another and the Atlantic ocean is their mass body of water.  Now Russia's SDG 6 score drops dramatically by almost 20 points and boarders Finland and Sweden.  In the next 3 graphs, we will be attempting to correlate and contrast other specific SDG scores to find a rhyme and reason.
+
+```{r}
+sdg_goal_chads_one <- ggplot(SDR_2023_Data, aes(x = goal_6_score, 
+                     y = goal_11_score, label = country)) +
+  geom_point() +
+  geom_smooth() +
+  stat_cor(output.type = "text", label.sep = '\n') +
+  theme_minimal() 
+
+ggplotly(sdg_goal_chads_one)
+```
+
+By looking at SDG goals, I wanted to see what SDG 11 goal scores looked liked in correlation to SDG 6 scores.  SDG 11 is sustainable cities and communities and the idea is that clean water is a part of the foundation of a sustainable community in it's most primal form.  Just by first glance you can see that there is an apparent positive correlation between the two SDG scores.  If you hover over this scatter plot you will see that all 3 countries have the strongest correlations. In turn, clean water can be seen as the life blood for sustainable cities. 
+
+
+
+```{r}
+goal_da_score <- ggplot(SDR_2023_Data, aes(x = goal_14_score, y = goal_6_score, color =regions_used_for_the_sdr , label = country)) +
+  geom_point() +
+  theme_dark() +
+  scale_fill_viridis_d(option = "magma") +
+  labs(title = "Fresh and Salty",
+       x = "Salty",
+       y = "Fresh",
+       color = "High Quality H2o")
+
+ggplotly(goal_da_score)
+```
+
+I've made a histogram to compare and contrast SDG 6 scores (clean water) and SDG 14 scores (life below water).  Hovering over the graph you can see there are fluctuations in the comparisons of sustainable Oceans and clean water.  It's interesting to see that although Sweden and Finland boarder the same Baltic Sea, their SDG 11 scores differ by almost 20 points.  After looking at the graph in entirety, I believe we can come to a conclusion that you can have super clean fresh water and your surrounding mass of Salt water doesn't need to have the greatest life below.
+
+```{r}
+ggplot(SDR_2023_Data, aes(x = goal_6_score, fill=regions_used_for_the_sdr)) + geom_histogram(bins = 27, color="black")
+```
+
+Now with my final histogram, you can see that in the OECD region which Sweden, Finland and the United Kingdom are in trump all other regions in the SDG 6 goal score category.  We've learned that Sustainable Cities are based upon having Clean Fresh Water readily available.  Also, there isn't much of a positive correlation with salty and fresh clean water and there sustainability.  You can have a mass of water like the Baltic Sea surrounded by two countries like Sweden and Finland with very high SDG 6 scores and their SDG 14 score fail in comparison.
+
+
+
